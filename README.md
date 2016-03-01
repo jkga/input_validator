@@ -60,7 +60,7 @@ You can use this function for filtration and detection
 ```php
 	<?php 
 		#sample email filtering
-		$email_verification=email([$email,'myEmail@yahoo.com'])->contained_in(['myEmail@yahoo.com','yourEmail@gmail.com']);
+		$email_verification=$check->email([$email,'myEmail@yahoo.com'])->contained_in(['myEmail@yahoo.com','yourEmail@gmail.com']);
 		
 		#returns true if one or more email contained on the list
 		if($email_verification->result){
