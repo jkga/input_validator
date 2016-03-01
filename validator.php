@@ -117,20 +117,20 @@ class input_validator{
 
 	}
 
-	#check if exist in data
+	#check if exist in data set
 	public function contained_in($set=array()){
 
 		$this->name='contain';
+		$this->filtered=[];
 		$this->result=0;
 		foreach ($this->data as $key => $val) {
-			#$this->result=0;
 			self::$errors['contain'][$key]=$val.' does not contained in set';
 			if(in_array($this->data[$key],$set)){
 				$this->result=1;
+				$this->filtered[]=$this->data[$key];
 				unset(self::$errors['contain']);
-				break;
+				
 			}
-
 			
 		}
 		 
@@ -138,12 +138,6 @@ class input_validator{
 
 	}
 
-
-
-
-
-
-	
 
 }
 
