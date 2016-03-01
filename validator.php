@@ -61,7 +61,6 @@ class input_validator{
 
 
 
-
 	#write custom message
 	public function write($err,$mess,$clone=false){
 		#read the message in current chain method
@@ -85,6 +84,42 @@ class input_validator{
 		$this->message=[];
 		return $this; 
 	}
+
+
+	#check empty fields
+	public function blank($value){ 
+		$this->name='empty';
+		$this->value=$value;
+		$this->result=1;
+		self::$errors['empty'][$value]='empty field detected';
+		if($this->value!=" " && !empty($this->value)){ 
+			unset(self::$errors['empty'][$value]);
+			$this->result=0;	
+		}
+
+		return $this;
+	}
+
+
+	#check proper name
+	public function name($value){
+		$pattern='/[[:digit:][:punct:]]/i'; #or '/[0-9]|[[:punct:]]/i'
+		$this->value=$value;
+
+		#check if not blank
+		$isBlank=(self::blank($this->value)->result);
+
+		$this->name='name';
+		$this->result=0;
+		self::$errors[$this->name][$this->value]='improper name';
+		if((!$isBlank) && (!preg_match($pattern, $this->value))){
+			unset(self::$errors[$this->name][$this->value]);
+			$this->result=1;
+		}
+
+		return $this;
+	}
+
 
 
 	#check if valid email
@@ -117,6 +152,7 @@ class input_validator{
 
 	}
 
+
 	#check if exist in data set
 	public function contained_in($set=array()){
 
@@ -128,12 +164,47 @@ class input_validator{
 			if(in_array($this->data[$key],$set)){
 				$this->result=1;
 				$this->filtered[]=$this->data[$key];
-				unset(self::$errors['contain']);
+				unset(self::$errors['contain'][$key]);
 				
 			}
 			
 		}
 		 
+		return $this;
+
+	}
+
+
+	#check if number lies within range
+	public function range($value, $min, $max){
+
+		$this->name='range';
+		$this->value=$value;
+		$this->min=$min;
+		$this->max=$max;
+		$this->result=0;
+		self::$errors['range'][$value]=$value.' is out of range ('.$min.'-'.$max.')';				
+		if($this->value>=$this->min && $this->value<=$this->max){
+			unset(self::$errors['range'][$value]);
+			$this->result=1; 
+		}
+		return $this;
+	}
+
+
+	#check valid length
+	public function length($value, $min, $max){
+
+		$this->name='length';
+		$this->value=$value;
+		$this->min=$min;
+		$this->max=$max;
+		$this->result=0;
+		self::$errors['length'][$value]=$value.' invalid length('.$this->min.'-'.$this->max.')';				
+		if(strlen($this->value)>=$this->min && strlen($this->value)<=$this->max){
+			unset(self::$errors['length'][$value]);
+			$this->result=1; 
+		}
 		return $this;
 
 	}
